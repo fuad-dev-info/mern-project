@@ -10,6 +10,7 @@ const JWT_SECRET = 'your_jwt_secret';
 
 
 const app = express();
+const port = 3443;
 
 fs.readFile(path.join(__dirname, 'ssl', 'key.pem'),(err,key) => {
     if(err){
@@ -37,17 +38,20 @@ mongoose.connect("mongodb://127.0.0.1:27017/User")
 .then(console.log("MongoDB Connected"))
 .catch((err) => console.error("MongoDB crashed"))
 
-const port = 3443;
+
 
 /// Middleware ///
 
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname,'public')));
 app.use(express.urlencoded({extended : false}));
 
 ///Routes///
 
 
+app.get('/', (req,res) => {
+    res.sendFile(path.join(__dirname,'public','index.html'));
+})
 
 app.post("/signup", async(req,res) => {
     const {userName,email,password} = req.body;
@@ -93,8 +97,10 @@ app.post('/signin', async (req,res) => {
     };
 });
 
-
+app.post('/logout',(req,res) => {
+    res.redirect('/');
+});
 
 app.get('/newsfeed',(req,res) => {
-    res.sendFile('You succesfully Logged in');
+    res.sendFile(path.join(__dirname,'public','logout.html'));
 });
